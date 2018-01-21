@@ -36,7 +36,7 @@ requestWithAuth() {
     api_token=${PLATFORMSH_API_TOKEN:-"$PLATFORMSH_CLI_TOKEN"}
     cache=${PLATFORMSH_API_CACHE:-/tmp/platformsh-api-"$USER"}
     token_file="$cache/tokens"
-    one_hour_ago=$(expr $(date '+%s') - 3600)
+    one_hour_ago=$(expr $(date +%s) - 3600)
 
     if [ -z "$api_token" ]; then
       echo 'One of PLATFORMSH_API_TOKEN or PLATFORMSH_CLI_TOKEN must be set' >&2
@@ -59,7 +59,7 @@ requestWithAuth() {
 
     # Get a cached token response (JSON from a file).
     getCachedTokenResponse() {
-      if [ -f "$token_file" ] && [ "$(stat -f "%Sm" -t "%s" "$token_file")" -ge "$one_hour_ago" ]; then
+      if [ -f "$token_file" ] && [ "$(stat -c%Y "$token_file")" -gt "$one_hour_ago" ]; then
         cat "$token_file"
       fi
     }
