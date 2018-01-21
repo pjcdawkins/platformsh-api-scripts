@@ -20,14 +20,6 @@ getJsonField() {
   echo "$1" | grep -Eio '"'"$2"'": *"[^"]*' | sed -E 's/"'"$2"'": ?"//'
 }
 
-getProjectId() {
-  echo $PLATFORM_PROJECT
-}
-
-getEnvironmentId() {
-  echo ${PLATFORM_BRANCH:-master}
-}
-
 # Make a cURL request with OAuth2 authentication.
 requestWithAuth() {
   # Get a Platform.sh access token for use with HTTP requests.
