@@ -32,8 +32,8 @@ loadCache() {
   getModifiedTime() {
     uname | grep -q Darwin && stat -f %m "$1" || stat -c %Y "$1"
   }
-  cache=${PLATFORMSH_API_CACHE:-/tmp/platformsh-api-$USER}
-  oldestAllowedTime=$(expr $(date +%s) - "$2")
+  local cache=${PLATFORMSH_API_CACHE:-/tmp/platformsh-api-$USER}
+  local oldestAllowedTime=$(expr $(date +%s) - "$2")
   if [ -f "$cache/$1" ] && [ "$(getModifiedTime "$cache/$1")" -gt "$oldestAllowedTime" ]; then
     cat "$cache/$1"
   fi
@@ -42,7 +42,7 @@ loadCache() {
 # Save to a cache.
 # Usage: saveCache cacheKey data
 saveCache() {
-  cache=${PLATFORMSH_API_CACHE:-/tmp/platformsh-api-$USER}
+  local cache=${PLATFORMSH_API_CACHE:-/tmp/platformsh-api-$USER}
   mkdir -p "$cache" && chmod 0700 "$cache"
   touch "$cache/$1" && chmod 0600 "$cache/$1"
   echo "$2" > "$cache/$1"
@@ -54,13 +54,13 @@ requestWithAuth() {
   getAccessToken() {
     # Exchange an API token for an access token (JSON response).
     getTokenResponse() {
-      client_id=${PLATFORMSH_API_CLIENT_ID:-platform-cli}
-      api_token=${PLATFORMSH_API_TOKEN:-$PLATFORMSH_CLI_TOKEN}
+      local client_id=${PLATFORMSH_API_CLIENT_ID:-platform-cli}
+      local api_token=${PLATFORMSH_API_TOKEN:-$PLATFORMSH_CLI_TOKEN}
       if [ -z "$api_token" ]; then
         echo 'One of $PLATFORMSH_API_TOKEN or $PLATFORMSH_CLI_TOKEN must be set' >&2
         exit 1
       fi
-      response=$(request \
+      local response=$(request \
            -H 'Accept: application/json' \
            -H 'Content-Type: application/x-www-form-urlencoded' \
            "$accounts_base_url"/oauth2/token \
@@ -73,7 +73,7 @@ requestWithAuth() {
     }
 
     # Get the access token response (cached if possible, or direct).
-    if ! response=$(loadCache tokens 3600) || [ -z "$response" ]; then
+    if ! local response=$(loadCache tokens 3600) || [ -z "$response" ]; then
       response=$(getTokenResponse)
       saveCache tokens "$response"
     fi
@@ -82,7 +82,7 @@ requestWithAuth() {
     getJsonField "$response" access_token
   }
 
-  if ! accessToken=$(getAccessToken) || [ -z "$accessToken" ]; then
+  if ! local accessToken=$(getAccessToken) || [ -z "$accessToken" ]; then
     exit 1
   fi
 
