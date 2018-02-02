@@ -1,7 +1,5 @@
 # Experimental: Platform.sh API scripts
 
-No warranty and no license. Don't use this unless you know what you are doing.
-
 As an alternative to installing the Platform.sh CLI on an environment, these
 scripts help run API actions without any particular dependencies (just things
 like `curl`, `sed`, and a few environment variables).
@@ -29,7 +27,8 @@ Edit the "hooks" section in your `.platform.app.yaml` to install the scripts:
 hooks:
   build: |
     set -e
-    git clone https://github.com/pjcdawkins/platformsh-api-scripts.git    
+    wget -qO- https://github.com/pjcdawkins/platformsh-api-scripts/archive/v0.0.1.tar.gz | tar -xz
+    mv platformsh-api-scripts-0.0.1 platformsh-api-scripts
 ```
 
 And edit the "crons" section to use the scripts:
