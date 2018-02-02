@@ -57,3 +57,30 @@ Exclude the scripts directory in your `.gitignore` file:
 ```
 /platformsh-api-scripts
 ```
+
+### Alternative: using the Platform.sh CLI.
+
+The CLI is better supported, so if you can, it's probably better to use it. The config would be similar:
+
+```yaml
+hooks:
+  build: |
+    set -e
+    curl -sfS https://platform.sh/cli/installer | php
+
+crons:
+  # Automatically redeploy every month.
+  redeploy:
+    spec: '0 0 1 * *'
+    cmd: |
+      if [ "$PLATFORM_BRANCH" = master ]; then
+        platform vset _redeploy "$(date)" --yes --no-wait
+      fi
+  # Automatically snapshot every week.
+  snapshot:
+    spec: '0 0 * * 0'
+    cmd: |
+      if [ "$PLATFORM_BRANCH" = master ]; then
+        platform snapshot:create --yes --no-wait
+      fi
+```
